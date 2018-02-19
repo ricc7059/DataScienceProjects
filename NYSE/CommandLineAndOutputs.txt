@@ -1,0 +1,30 @@
+Command to move jar files to cluster:
+$ scp nyse.jar ricci@hc.gps.stthoms.edu:~
+
+Command to run job on cluster:
+$ hadoop jar nyse.jar stubs.NYSEDriver /SEIS736/NYSE nysenp
+
+Commands to read the first and last lines of the first reducer output file part-r-00000:
+$ hadoop fs -ls
+$ hadoop fs -ls nysenp
+$ hadoop fs -cat nysenp/part-r-00000
+
+First line of part-r-00000: AB      48.28169
+Last line of part-r-00000: WMG     49.999996
+
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+
+Command to move jar files to cluster:
+$ scp nysepartitioner.jar ricci@hc.gps.stthoms.edu:~
+
+Command to run job on cluster:
+$ hadoop jar nysepartitioner.jar stubs.NYSEDriver /SEIS736/NYSE nysep
+
+Commands to read the first and last lines of the first reducer output file part-r-00000:
+$ hadoop fs -ls
+$ hadoop fs -ls nysep
+$ hadoop fs -cat nysep/part-r-00000
+
+First line of part-r-00000: AA      40.823532
+Last line of part-r-00000: AZZ     44.444443
