@@ -1,19 +1,27 @@
-Commands to move jar files to cluster:
-	$scp tweetWc1.jar ricci@hc.gps.stthomas.edu:~
+//Commands to move jar files to cluster:
+
+$scp tweetWc1.jar ricci@hc.gps.stthomas.edu:~
 
 $scp tweetwc3.jar ricci@hc.gps.stthomas.edu:~
 
-Command to run first MapReduce job:
-	$ hadoop jar tweetWc1.jar stubs.TweetDriver /SEIS736/tweets tweetWordCount
+//Command to run first MapReduce job:
 
-Command to run second MapReduce job:
+$ hadoop jar tweetWc1.jar stubs.TweetDriver /SEIS736/tweets tweetWordCount
+
+//Command to run second MapReduce job:
+
 $ hadoop jar tweetwc3.jar stubs.TweetDriver2 tweetWordCount/part-r-00000 tweetWordCount2
 
-Command to print top 100 lines from second MapReduce job, and save output to a new file:
-	$ hadoop fs -cat tweetWordCount2/part-r-00000 | head -100 > tweetWordCountOutput
+//Command to print top 100 lines from second MapReduce job, and save output to a new file:
 
-Command to read tweetWordCountOutput contents:
-	$ cat tweetWordCountOutput
+$ hadoop fs -cat tweetWordCount2/part-r-00000 | head -100 > tweetWordCountOutput
+
+//Command to read tweetWordCountOutput contents:
+
+$ cat tweetWordCountOutput
+
+--------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------
 
 User-Defined Counters for first MapReduce job:
 	BAD_RECORD: 4437
