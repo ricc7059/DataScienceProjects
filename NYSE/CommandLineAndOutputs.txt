@@ -1,3 +1,4 @@
+TODO_1
 Command to move jar files to cluster:
 $ scp nyse.jar ricci@hc.gps.stthoms.edu:~
 
@@ -15,6 +16,7 @@ Last line of part-r-00000: WMG     49.999996
 -----------------------------------------------------------------------
 -----------------------------------------------------------------------
 
+TODO_2
 Command to move jar files to cluster:
 $ scp nysepartitioner.jar ricci@hc.gps.stthoms.edu:~
 
