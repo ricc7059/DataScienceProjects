@@ -1,0 +1,2 @@
+Write a Java MapReduce program to produce a list of the top words
+used in these tweets, with the word count as the key and the word as the value, in decreasing count order. Turn in your source code and the top 100 words, along with your user-defined counter values for the number of tweets along with the number of bad records.

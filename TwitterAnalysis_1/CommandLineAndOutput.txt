@@ -1,0 +1,122 @@
+Commands to move jar files to cluster:
+	$scp tweetWc1.jar ricci@hc.gps.stthomas.edu:~
+
+$scp tweetwc3.jar ricci@hc.gps.stthomas.edu:~
+
+Command to run first MapReduce job:
+	$ hadoop jar tweetWc1.jar stubs.TweetDriver /SEIS736/tweets tweetWordCount
+
+Command to run second MapReduce job:
+$ hadoop jar tweetwc3.jar stubs.TweetDriver2 tweetWordCount/part-r-00000 tweetWordCount2
+
+Command to print top 100 lines from second MapReduce job, and save output to a new file:
+	$ hadoop fs -cat tweetWordCount2/part-r-00000 | head -100 > tweetWordCountOutput
+
+Command to read tweetWordCountOutput contents:
+	$ cat tweetWordCountOutput
+
+User-Defined Counters for first MapReduce job:
+	BAD_RECORD: 4437
+	NUM_TWEETS: 18602
+
+Top 100 Words:
+
+14103   t
+13183   http
+12746   co
+7432    your
+6907    to
+6399    a
+6260    career
+5434    RT
+5352    in
+4516    the
+4436    power
+4396    of
+4213    Power
+3966    you
+3867    and
+3483    with
+3314    Your
+2904    Graduate
+2723    Career
+2679    Computer
+2430    graduate
+2421    Science
+2320    for
+2247    I
+2163    Information
+2134    degree
+2105    Technology
+2104    is
+1625    s
+1554    Software
+1532    at
+1480    have
+1360    science
+1359    computer
+1260    Degree
+1182    Job
+1180    Engineering
+1165    on
+1131    You
+1124    engineering
+1092    or
+1068    from
+972     job
+969     software
+948     Feng
+936     The
+909     it
+890     jobs
+786     will
+764     YOUR	762     POWER
+755     Shui
+750     by
+729     an
+720     CAREER
+706     via
+685     How
+674     can
+673     my
+665     that
+664     Safelite
+657     are
+654     shui
+644     should
+630     IT
+617     practical
+588     Get
+563     need
+554     start
+552     be
+541     10
+534     this
+529     first
+519     UP
+499     Engineer
+481     re
+472     off
+470     m
+466     support
+461     feng
+457     More
+456     This
+450     Jobs
+448     me
+438     as
+434     don
+433     training
+430     head
+429     but
+428     A
+418     eBay
+417     Seller
+414     DSDomination
+402     about
+401     who
+400     2
+395     life
+393     programming
+391     what
+389     up
