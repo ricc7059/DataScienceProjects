@@ -1,0 +1,17 @@
+Data Ingest with Hadoop Tools
+
+# create new directory 'dualcore' in HDFS
+$ hdfs dfs -mkdir /dualcore
+
+# create new subdirectory 'test1' in directory 'dualcore'
+$ hdfs dfs -mkdir /dualcore/test1
+
+# load web server log into 'test1'
+$ hdfs dfs -put home/training/training_materials/analyst/data/access.log /dualcore/test1
+
+# verify that the file was loaded
+$ hdfs dfs -ls /dualcore/test1
+
+# remove 'test1' directory and its contents
+$ hdfs dfs -rm -r /dualcore/test1
+

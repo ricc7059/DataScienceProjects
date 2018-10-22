@@ -1,0 +1,102 @@
+Importing Database Tables into HDFS with Sqoop
+
+# log into MySQL dualcore database
+$ mysql --user=training --password=training dualcore
+
+# list available tables
+mysql> SHOW TABLES;
+
++--------------------+
+| Tables_in_dualcore |
++--------------------+
+| customers          |
+| employees          |
+| order_details      |
+| orders             |
+| products           |
+| suppliers          |
++--------------------+
+6 rows in set (0.00 sec)
+
+# review structure of the employees table and examine the first 10 rows
+mysql> DESCRIBE employees;
+
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| emp_id    | char(9)     | NO   | PRI | NULL    |       |
+| fname     | varchar(15) | YES  |     | NULL    |       |
+| lname     | varchar(20) | YES  |     | NULL    |       |
+| address   | varchar(40) | YES  |     | NULL    |       |
+| city      | varchar(30) | YES  |     | NULL    |       |
+| state     | char(2)     | YES  |     | NULL    |       |
+| zipcode   | char(5)     | YES  |     | NULL    |       |
+| job_title | varchar(35) | YES  |     | NULL    |       |
+| email     | varchar(25) | YES  |     | NULL    |       |
+| active    | char(1)     | NO   |     | Y       |       |
+| salary    | int(11)     | YES  |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+11 rows in set (0.00 sec)
+
+mysql> SELECT emp_id, fname, lname, state, salary FROM employees LIMIT 10;
+
++-----------+---------+-----------+-------+--------+
+| emp_id    | fname   | lname     | state | salary |
++-----------+---------+-----------+-------+--------+
+| AA1130960 | Amy     | Alicea    | KY    |  22329 |
+| AA1146303 | Anna    | Atkins    | CA    |  99645 |
+| AA1154964 | Annie   | Albritton | WV    |  26717 |
+| AA1352280 | Antoine | Aguirre   | AL    |  26078 |
+| AA1411429 | Arthur  | Andersen  | MS    |  17486 |
+| AA1418885 | Amanda  | Atkinson  | CA    |  22278 |
+| AA1510726 | Ann     | Askew     | KY    |  17220 |
+| AA1567042 | Anne    | Almonte   | CA    |  18566 |
+| AA1609979 | Anthony | Allen     | PA    |  20575 |
+| AA1636177 | Anthony | Aguilar   | CO    |  25262 |
++-----------+---------+-----------+-------+--------+
+10 rows in set (0.00 sec)
+
+mysql> quit
+
+# use Sqoop to import the employees table into HDFS
+$ sqoop import
+  --connect jdbc:mysql://localhost/dualcore
+  --username training --password training
+  --fields-terminated-by '\t'
+  --warehouse-dir /dualcore
+  --table employees
+
+# use Sqoop to import the customers table into HDFS
+$ sqoop import
+  --connect jdbc:mysql://localhost/dualcore
+  --username training --password training
+  --fields-terminated-by '\t'
+  --warehouse-dir /dualcore
+  --table customers
+
+# use Sqoop to import the products table into HDFS
+$ sqoop import
+  --connect jdbc:mysql://localhost/dualcore
+  --username training --password training
+  --fields-terminated-by '\t'
+  --warehouse-dir /dualcore
+  --table products
+
+# use Sqoop to import the orders table into HDFS
+$ sqoop import
+  --connect jdbc:mysql://localhost/dualcore
+  --username training --password training
+  --fields-terminated-by '\t'
+  --warehouse-dir /dualcore
+  --table orders
+
+# use Sqoop to import the order_details table into HDFS
+# order_details does not have a primary key, need to use --split-by option
+# to divide the import work based on values in the order_id field
+$ sqoop import
+  --connect jdbc:mysql://localhost/dualcore
+  --username training --password training
+  --fields-terminated-by '\t'
+  --warehouse-dir /dualcore
+  --table order_details
+  --split-by order_id

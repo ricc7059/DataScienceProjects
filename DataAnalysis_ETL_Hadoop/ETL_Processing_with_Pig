@@ -1,0 +1,177 @@
+ETL Processing with Pig
+
+# copy 25 records from input file into new file on the local file system
+$ head -n 25 /home/training/training_materials/analyst/data/ad_data1.txt > sample1.txt
+
+# verify the new file exists
+$ ls -l
+
+# start Grunt shell locally
+$ pig -x local
+
+# load the sample1.txt file into Pig
+grunt> data = LOAD 'sample1.txt'
+
+# view the data loaded
+grunt> DUMP data;
+
+# load the first two columns from the sample file as character data
+grunt> first_2_columns = LOAD 'sample1.txt' AS (keyword:chararray, campaign_id:chararray);
+
+# view the first_2_columns data
+grunt> DUMP first_2_columns;
+
+# view the schema of the first_2_columns data
+grunt> DESCRIBE first_2_columns;
+
+# exit Grunt shell
+grunt> QUIT;
+
+# edit first_etl.pig script to load 'sample1.txt'
+$ cat first_etl.pig
+
+$ vi first_etl.pig
+
+	data = LOAD '/home/training/training_materials/analyst/exercises/pig_etl/sample1.txt' AS (keyword:chararray, campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, was_clicked:int, cpc:int, country:chararray, placement:chararray);
+
+	DESCRIBE data;
+
+	DUMP data;
+
+# run first_etl.pig script locally
+$ pig -x local first_etl.pig
+
+# modify first_etl.pig script to filter out all records except where country=USA
+$ vi first_etl.pig
+
+	data = LOAD '/home/training/training_materials/analyst/exercises/pig_etl/sample1.txt' AS (keyword:chararray, campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, was_clicked:int, cpc:int, country:chararray, placement:chararray);
+
+	x = FILTER data BY country == 'USA';
+
+	DESCRIBE x;
+
+	DUMP x;
+
+# modify first_etl.pig script to create new relation containing the fields in the following order:
+# campaign_id, date, time, keyword, display_site, placement, was_clicked, cpc
+$ vi first_etl.pig
+
+	data = LOAD '/home/training/training_materials/analyst/exercises/pig_etl/sample1.txt' AS (keyword:chararray, campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, was_clicked:int, cpc:int, country:chararray, placement:chararray);
+
+	x = FILTER data BY country == 'USA';
+
+	y = FOREACH x GENERATE campaign_id,date,time,keyword,display_site,placement,was_clicked,cpc;
+
+	DESCRIBE y;
+
+	DUMP y;
+
+# modify first_etl.pig script to convert keyword field to uppercase, and remove any leading
+# and trailing whitespace
+$ vi first_etl.pig
+
+	data = LOAD '/home/training/training_materials/analyst/exercises/pig_etl/sample1.txt' AS (keyword:chararray, campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, was_clicked:int, cpc:int, country:chararray, placement:chararray);
+
+	x = FILTER data BY country == 'USA';
+
+	y = FOREACH x GENERATE campaign_id,date,time,keyword,display_site,placement,was_clicked,cpc;
+
+	z = FOREACH y GENERATE campaign_id, date,time,UPPER(keyword) AS ukeyword,display_site,placement,was_clicked,cpc;
+
+	zz = FOREACH z GENERATE campaign_id,date,time,TRIM(ukeyword) AS keyword_ut,display_site,placement,was_clicked,cpc;
+
+	DESCRIBE zz;
+
+	DUMP zz;
+
+# add ad_data1.txt to HDFS
+$ hdfs dfs -put /home/training/training_materials/analyst/data/ad_data1.txt /dualcore
+
+# modify first_etl.pig to match the path of the 'ad_data1.txt' file added to HDFS
+# store in directory /dualcore/ad_data1 as tab-delimited records
+
+	data = LOAD '/dualcore/ad_data1.txt' AS (keyword:chararray, campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, was_clicked:int, cpc:int, country:chararray, placement:chararray);
+
+	x = FILTER data BY country == 'USA';
+
+	y = FOREACH x GENERATE campaign_id,date,time,keyword,display_site,placement,was_clicked,cpc;
+
+	z = FOREACH y GENERATE campaign_id, date,time,UPPER(TRIM(keyword)) AS keyword,display_site,placement,was_clicked,cpc;
+
+	STORE z INTO '/dualcore/ad_data1' USING PigStorage();
+
+	DESCRIBE z;
+
+# run first_etl.pig in cluster mode to analyze entire ad_data1.txt file in HDFS
+$ pig first_etl.pig
+
+# view the first 20 records of ad_data1 in HDFS
+$ hdfs dfs -cat /dualcore/ad_data1/part* | head -20
+
+# create a small sample of the data from file ad_data2.txt
+$ head -n 25 /home/training/training_materials/analyst/data/ad_data2.txt > sample2.txt
+
+# modify second_etl.pig to load sample2.txt
+$ vi second_etl.pig
+
+	data = LOAD '/home/training/training_materials/analyst/data/sample2.txt' USING PigStorage(',') AS (campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, placement:chararray, was_clicked:int, cpc:int, keyword:chararray);
+
+	DESCRIBE data;
+
+# modify second_etl.pig to remove duplicate records
+$ vi second_etl.pig
+
+	data = LOAD '/home/training/training_materials/analyst/data/sample2.txt' USING PigStorage(',') AS (campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, placement:chararray, was_clicked:int, cpc:int, keyword:chararray);
+
+	x = DISTINCT data;
+
+	DUMP x;
+
+# modify second_etl.pig to store fields in the following order: campaign_id, date, time, keyword,
+# display_site, placement, was_clicked, cpc
+# convert keyword to uppercase and remove any leading/trailing whitespace
+$ vi second_etl.pig
+	
+	data = LOAD '/home/training/training_materials/analyst/data/sample2.txt' USING PigStorage(',') AS (campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, placement:chararray, was_clicked:int, cpc:int, keyword:chararray);
+
+	x = DISTINCT data;
+
+	y = FOREACH x GENERATE campaign_id, date, time, UPPER(TRIM(keyword)) AS keyword, display_site, placement, was_clicked, cpc;
+
+	DUMP y;
+
+# modify second_etl.pig to reformat date from MM-DD-YYYY to MM/DD/YYYY
+$ vi second_etl.pig
+	
+	data = LOAD '/home/training/training_materials/analyst/data/sample2.txt' USING PigStorage(',') AS (campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, placement:chararray, was_clicked:int, cpc:int, keyword:chararray);
+
+	x = DISTINCT data;
+
+	y = FOREACH x GENERATE campaign_id, REPLACE(date, '-', '/') AS date, time, UPPER(TRIM(keyword)) AS keyword, display_site, placement, was_clicked, cpc;
+
+	DUMP y;
+
+# load ad_data2.txt to HDFS
+$ hdfs dfs -put /home/training/training_materials/analyst/data/ad_data2.txt /dualcore
+
+# confirm the file is present in targer HDFS directory
+$ hdfs dfs -ls /dualcore
+
+# modify second_etl.pig script to load in the ad_data2.txt file and store output as tab-delimited records
+# to the /dualcore/ad_data2 directory
+$ vi second_etl.pig
+
+	data = LOAD '/dualcore/ad_data2.txt' USING PigStorage(',') AS (campaign_id:chararray, date:chararray, time:chararray, display_site:chararray, placement:chararray, was_clicked:int, cpc:int, keyword:chararray);
+
+	x = DISTINCT data;
+
+	y = FOREACH x GENERATE campaign_id, REPLACE(date, '-', '/') AS date, time, UPPER(TRIM(keyword)) AS keyword, display_site, placement, was_clicked, cpc;
+
+	STORE y INTO '/dualcore/ad_data2' USING PigStorage('\t');
+
+# run final version of second_etl.pig in cluster mode
+$ pig second_etl.pig
+
+# verify the first 15 records written to HDFS by second_etl.pig
+$ hdfs dfs -cat /dualcore/ad_data2/part* | head -15
+
